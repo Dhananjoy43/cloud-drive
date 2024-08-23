@@ -18,11 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { signInSchema } from "@/schema/auth.schema";
 
-export const signInSchema = z.object({
-    email: z.string().email({ message: "Invalid email." }),
-    password: z.string().min(1, { message: "Password is required." })
-});
 type FormData = z.infer<typeof signInSchema>;
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -43,30 +40,16 @@ export function SigninForm({ className, ...props }: UserAuthFormProps) {
         setIsLoading(true);
 
         try {
-            const res = await fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/login`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(_data)
-                }
-            );
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(_data)
+            });
 
             const signInResult = await res.json();
             setIsLoading(false);
-
-            if (!signInResult.success) {
-                return toast.error(
-                    signInResult.error || "Something went wrong.",
-                    {
-                        description:
-                            "Your sign in request failed. Please try again."
-                    }
-                );
-            }
 
             if (!res.ok) {
                 return toast.error(
@@ -78,6 +61,7 @@ export function SigninForm({ className, ...props }: UserAuthFormProps) {
                 );
             }
 
+            form.reset();
             router.push("/dashboard");
             return toast.success(signInResult.message || "Signin successful", {
                 description: "You have successfully signed in your account."
@@ -144,7 +128,7 @@ export function SigninForm({ className, ...props }: UserAuthFormProps) {
                             {isLoading && (
                                 <Loader2 className="mr-2 size-4 animate-spin" />
                             )}
-                            Sign Up with Email
+                            Sign In with Email
                         </Button>
                     </div>
                 </form>

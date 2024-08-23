@@ -7,8 +7,10 @@ import { BorderBeam } from "@/components/ui/border-beam";
 import { TextShimmer } from "@/components/ui/text-shimmer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export default function HeroSection() {
+    const currentUser = useCurrentUser();
     const ref = useRef(null);
     const inView = useInView(ref, { once: true, margin: "-100px" });
     return (
@@ -36,10 +38,11 @@ export default function HeroSection() {
                 asChild
                 className="animate-fade-in -translate-y-4 gap-1 rounded-lg text-white opacity-0 ease-in-out [--animation-delay:600ms] dark:text-black"
             >
-                <Link href={"/signup"}>
-                    <span>Get Started for free </span>
-                    <ArrowRightIcon className="ml-1 size-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
-                </Link>
+                {currentUser ? (
+                    <Link href={"/dashboard"}>Go to dashboard</Link>
+                ) : (
+                    <Link href={"/auth/signup"}>Get Started for free</Link>
+                )}
             </Button>
             <div
                 ref={ref}

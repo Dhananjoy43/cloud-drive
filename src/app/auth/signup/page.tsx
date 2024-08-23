@@ -1,9 +1,8 @@
 import { ChevronLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { SignupForm } from "@/components/auth/signup-form";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "Sign Up | Nyxb UI",
@@ -13,18 +12,19 @@ export const metadata: Metadata = {
 export default function SignUpPage() {
     return (
         <div className="container flex h-screen w-screen flex-col items-center justify-center">
-            <Link
-                href="/"
-                className={cn(
-                    buttonVariants({ variant: "ghost" }),
-                    "absolute left-4 top-4 md:left-8 md:top-8"
-                )}
+            <Button
+                asChild
+                variant={"ghost"}
+                size={"sm"}
+                className="absolute left-4 top-4 md:left-8 md:top-8"
             >
-                <>
-                    <ChevronLeft className="mr-2 size-4" />
-                    Back
-                </>
-            </Link>
+                <Link href="/">
+                    <>
+                        <ChevronLeft className="mr-1 size-4" />
+                        Back
+                    </>
+                </Link>
+            </Button>
             <div className="mx-auto flex w-full flex-col justify-center gap-6 sm:w-[350px]">
                 <div className="flex flex-col gap-2 text-center">
                     {/* <Icons.logo className="mx-auto h-6 w-6" /> */}
@@ -36,14 +36,11 @@ export default function SignUpPage() {
                     </p>
                 </div>
                 <SignupForm />
-                <p className="text-muted-foreground px-8 text-center text-sm">
-                    <Link
-                        href="/signin"
-                        className="hover:text-brand underline underline-offset-4"
-                    >
+                <Button asChild variant={"link"} size={"sm"}>
+                    <Link href="/auth/signin">
                         Already have an account? Sign In
                     </Link>
-                </p>
+                </Button>
             </div>
         </div>
     );

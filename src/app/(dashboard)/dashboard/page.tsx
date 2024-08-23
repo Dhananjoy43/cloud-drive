@@ -1,0 +1,37 @@
+import Link from "next/link";
+
+import PlaceholderContent from "@/components/demo/placeholder-content";
+import { ContentLayout } from "@/components/admin-panel/content-layout";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator
+} from "@/components/ui/breadcrumb";
+import { currentUser } from "@/helpers/auth.helpers";
+
+export default async function DashboardPage() {
+    const user = await currentUser();
+    console.log(user);
+
+    return (
+        <ContentLayout title="Dashboard">
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href="/">Home</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            <PlaceholderContent />
+        </ContentLayout>
+    );
+}

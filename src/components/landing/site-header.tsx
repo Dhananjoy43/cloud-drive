@@ -5,8 +5,9 @@ import { AlignJustify, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ModeToggle } from "../mode-toggle";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 const menuItem = [
     {
@@ -32,6 +33,8 @@ const menuItem = [
 ];
 
 export function SiteHeader() {
+    const currentUser = useCurrentUser();
+
     const mobilenavbarVariant = {
         initial: {
             opacity: 0,
@@ -104,22 +107,36 @@ export function SiteHeader() {
             <header className="animate-fade-in fixed left-0 top-0 z-50 w-full -translate-y-4 border-b opacity-0 backdrop-blur-md [--animation-delay:600ms]">
                 <div className="container flex h-14 items-center justify-between">
                     <Link className="text-md flex items-center" href="/">
-                        Nyxb UI
+                        Cloud Drive
                     </Link>
 
-                    <div className="ml-auto flex h-full items-center">
-                        <Link className="mr-6 text-sm" href="/signin">
-                            Log in
-                        </Link>
-                        <Link
-                            className={cn(
-                                buttonVariants({ variant: "secondary" }),
-                                "mr-6 text-sm"
-                            )}
-                            href="/signup"
-                        >
-                            Sign up
-                        </Link>
+                    <div className="ml-auto flex h-full items-center gap-2">
+                        {!currentUser ? (
+                            <>
+                                <Button asChild variant={"ghost"}>
+                                    <Link className="mr-2" href="/auth/signin">
+                                        Sign in
+                                    </Link>
+                                </Button>
+                                <Button asChild>
+                                    <Link
+                                        className={cn("mr-2")}
+                                        href="/auth/signup"
+                                    >
+                                        Sign up
+                                    </Link>
+                                </Button>
+                            </>
+                        ) : (
+                            <Button asChild size={"sm"}>
+                                <Link
+                                    className="mr-6 text-sm"
+                                    href="/dashboard"
+                                >
+                                    Dashboard
+                                </Link>
+                            </Button>
+                        )}
                         <ModeToggle />
                     </div>
                     <button
@@ -146,7 +163,7 @@ export function SiteHeader() {
                 >
                     <div className="container flex h-14 items-center justify-between">
                         <Link className="text-md flex items-center" href="/">
-                            Nyxb UI
+                            Cloud Drive
                         </Link>
 
                         <button

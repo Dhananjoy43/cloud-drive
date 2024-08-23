@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(cuid())
+  name     String
+  email    String  @unique
+  avatar   String?
+  password String
+
+  folders Folder[]
+  Image   Image[]
+  Video   Video[]
+}
+
+enum FolderType {
+  IMAGE
+  VIDEO
+}
+
+model Folder {
+  id     String     @id @default(cuid())
+  type   FolderType
+  name   String
+  images Image[]
+  videos Video[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Image {
+  id           String  @id @default(cuid())
+  publicId     String
+  url          String
+  folderName   String
+  format       String
+  originalName String
+  starred      Boolean @default(false)
+  size         Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  folder   Folder? @relation(fields: [folderId], references: [id])
+  folderId String?
+
+  createdAt DateTime @default(now())
+}
+
+model Video {
+  id           String  @id @default(cuid())
+  publicId     String
+  url          String
+  folderName   String
+  format       String
+  originalName String
+  starred      Boolean @default(false)
+  size         Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  folder   Folder? @relation(fields: [folderId], references: [id])
+  folderId String?
+
+  createdAt DateTime @default(now())
+}

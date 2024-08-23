@@ -5,6 +5,8 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
     metadataBase: new URL(
@@ -35,23 +37,26 @@ export const metadata: Metadata = {
     }
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await auth();
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={GeistSans.className}>
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    disableTransitionOnChange
-                >
-                    {children}
-                    <Toaster />
-                </ThemeProvider>
-            </body>
+            <SessionProvider session={session}>
+                <body className={GeistSans.className}>
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="dark"
+                        disableTransitionOnChange
+                    >
+                        {children}
+                        <Toaster />
+                    </ThemeProvider>
+                </body>
+            </SessionProvider>
         </html>
     );
 }

@@ -17,19 +17,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { signUpSchema } from "@/schema/auth.schema";
 
-export const signUpSchema = z.object({
-    fullName: z
-        .string()
-        .min(3, { message: "Minimum 3 characters is required." }),
-    username: z
-        .string()
-        .min(3, { message: "Minimum 3 characters is required." }),
-    email: z.string().email({ message: "Invalid email." }),
-    password: z
-        .string()
-        .min(5, { message: "Minimum 5 characters is required." })
-});
 type FormData = z.infer<typeof signUpSchema>;
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -38,7 +27,9 @@ export function SignupForm({ className, ...props }: UserAuthFormProps) {
     const form = useForm<FormData>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
-            email: ""
+            name: "",
+            email: "",
+            password: ""
         }
     });
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -46,34 +37,34 @@ export function SignupForm({ className, ...props }: UserAuthFormProps) {
     async function onSubmit(_data: FormData) {
         setIsLoading(true);
 
-        // TODO: Add signin using preferred provider
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/register`,
-            {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(_data)
-            }
-        );
+        const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(_data)
+        });
 
-        console.log(await res.json());
-
-        const signInResult = { ok: true };
+        const signInResult = await res.json();
         setIsLoading(false);
 
         if (!signInResult?.ok) {
-            return toast.error("Something went wrong.", {
-                description: "Your sign in request failed. Please try again."
-            });
+            return toast.error(
+                signInResult?.message || "Something went wrong.",
+                {
+                    description:
+                        "Your sign in request failed. Please try again."
+                }
+            );
         }
 
-        return toast.success("Check your email", {
-            description:
-                "We sent you a login link. Be sure to check your spam too."
-        });
+        return toast.success(
+            signInResult?.message || "Registration successful",
+            {
+                description:
+                    "You have successfully registered to Cloud Drive. Login to access your dashboard."
+            }
+        );
     }
 
     return (
@@ -83,7 +74,7 @@ export function SignupForm({ className, ...props }: UserAuthFormProps) {
                     <div className="grid gap-4">
                         <FormField
                             control={form.control}
-                            name="fullName"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
@@ -94,28 +85,6 @@ export function SignupForm({ className, ...props }: UserAuthFormProps) {
                                             type="text"
                                             autoCapitalize="none"
                                             autoComplete="name"
-                                            autoCorrect="off"
-                                            disabled={isLoading}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="username"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Username</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            id="username"
-                                            placeholder="Username@123"
-                                            type="text"
-                                            autoCapitalize="none"
-                                            autoComplete="username"
                                             autoCorrect="off"
                                             disabled={isLoading}
                                             {...field}
